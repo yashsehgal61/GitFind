@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap');
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+html,body{
+    font-family: "Playfair";
+    font-size:65%;/* 1 rem=16px and now 1 rem=10px */
+}
+body{
+    background-color: rgba(61, 111, 187, 0.877);
+font-size: 1.6rem;
+}
+.con{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    padding:1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    color: white;
+}
+.search{
+    max-width: 78rem;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.search input{
+padding: 1rem;
+width: 50%;
+outline: none;
+border-bottom:1px solid rgb(196, 182, 182);
+border-left: none;
+border-right: none;
+border-top: none;
+}
+.btn{
+    padding: 0.5rem 1rem;
+    border: none;
+    font-family: "Playfair";
+    background-color: rgb(57, 57, 219);
+    color: white;
+    cursor:pointer;
+    transition: background-color 0.4s ,color 0.4s;
+}
+.btn:active{
+    color:rgb(98, 98, 177);
+    background-color:white;
+    border: 1px solid  rgb(196, 182, 182);
+}
+.card{
+    /* width: 100%; */
+    height: 100%;
+    max-height: 80rem;
+    max-width: 68rem;
+    background-color: rgba(69, 10, 124, 0.733);
+    color: white;
+    border: 1px solid rgb(255, 255, 255);
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    box-shadow: 1px 1px 10px rgb(0, 0, 0);
+}
+.avatar{
+    height: 10rem;
+    width: 9.5rem;
+}
+.avatar img{
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+.top{
+    margin: 1rem;
+    display: flex;
+    align-items:center ;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 1rem;
+}
+.left{
+    font-size:1.6rem;
+    display: flex;
+    align-items: center;
+    gap:1rem;
+}
+.bottom .b1{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    word-break:break-all;
+    margin: 1.6rem;
+}
+
+.bottom .b2{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+}
+.b2 .f1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+} 
+.card:hover{
+    transform:rotatez(-5deg);
+    transition: 0.6s;
+    transition-timing-function: ease-in;
+}
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search-Profile</title>
+    <link rel="stylesheet" href="Profile.css">
+</head>
+<body>
+    <div class="con">
+        <h1>Search Github Profile</h1>
+        <div class="search">
+            <input type="text"placeholder="Enter your github username"id="searchinp">
+            <button class ="btn"id="btn1">Search</button>
+        </div>
+        <div id="take"></div>
+        <div id="takeload"></div>
+    </div>
+</body>
+<script>
+    const url = "https://api.github.com/users";
+let searchinp=document.getElementById("searchinp");
+let btn1=document.getElementById("btn1");
+let take=document.getElementById("take");
+let takeload=document.getElementById("takeload");
+let username;
+function generate(profile)
+{return(`<div class="card">
+            <div class="top">
+                <div class="left">
+                    <div class="avatar">
+                        <img src="${profile.avatar_url}" alt="">
+                    </div>
+                    <div class="self">
+                        <h2>${profile.name}</h2>
+                        <h3>${profile.login}</h3>
+                    </div>
+                </div>
+                <a href="${profile.html_url} "target=__blank">
+                <button class="btn">Check Profile</button>
+                </a>
+            </div>
+            <div class="bottom">
+                <div class="b1">
+                <h2>About</h2>    
+                <p>${profile.bio}</p>
+                <div class="b2">
+                 <div class="f1">
+                    <h3>Followers</h3>
+                    <p>${profile.followers}</p>
+                 </div>
+                 <div class="f1">
+                    <h3>Repos</h3>
+                    <p>${profile.public_repos}</p>
+                 </div>
+                 <div class="f1">
+                    <h3>Following</h3>
+                    <p>${profile.following}</p>
+                 </div>
+                </div>
+            </div>
+            
+</div> `)}
+let f=async(url)=>
+{
+    username=searchinp.value;
+    try{
+        const data=await fetch(`${url}/${username}`);
+        const res=await data.json();
+        console.log(res)
+        if(res.html_url)
+        {
+            takeload.innerText=" ";
+            take.innerHTML=generate(res);
+        }
+        else{
+          takeload.innerText=res.message;
+          takeload.style.color="red";
+          take.innerHTML="";
+        }
+    }
+    catch(error)
+    {
+       console.log(error);
+       takeload.innerText="";
+    }
+}
+btn1.addEventListener("click",()=>{
+    f(url);
+})
+</script>
+</html>
